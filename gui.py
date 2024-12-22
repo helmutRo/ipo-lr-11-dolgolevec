@@ -15,24 +15,31 @@ class TransportApp:
         self.load_data()# Загрузка данных из файлов
         self.create_widgets()
     #Загрузка данных из файлов
-    def load_data(self):
-        #проверка и загрузка данных клиентов
-        if os.path.exists("clients.json"):
-            with open("clients.json", "r") as f:
-                clients_data = json.load(f)
-                for client_data in clients_data:
-                    client = Client(client_data['name'], client_data['cargo_weight'], client_data['is_vip'])
-                    self.company.add_client(client)
-        #проверка и загрузка данных транспорта
-        if os.path.exists("transport.json"):
-            with open("transport.json", "r") as f:
-                transport_data = json.load(f)
-                for vehicle_data in transport_data:
-                    if vehicle_data['type'] == 'Van':
-                        vehicle = Van(vehicle_data['capacity'], vehicle_data['is_refrigerated'])
-                    elif vehicle_data['type'] == 'Ship':
-                        vehicle = Ship(vehicle_data['capacity'], vehicle_data['name'])
-                    self.company.add_vehicle(vehicle)
+def load_data(self):
+    base_path = os.path.dirname(os.path.realpath(__file__))  # Получаем путь до текущего файла
+    
+    # Убедимся, что папки существуют
+    clients_path = os.path.join(base_path, 'clients.json')
+    transport_path = os.path.join(base_path, 'transport.json')
+    
+    # Загрузка данных
+    if os.path.exists(clients_path):
+        with open(clients_path, 'r') as f:
+            clients_data = json.load(f)
+            for client_data in clients_data:
+                client = Client(client_data['name'], client_data['cargo_weight'], client_data['is_vip'])
+                self.company.add_client(client)
+
+    if os.path.exists(transport_path):
+        with open(transport_path, 'r') as f:
+            transport_data = json.load(f)
+            for vehicle_data in transport_data:
+                if vehicle_data['type'] == 'Van':
+                    vehicle = Van(vehicle_data['capacity'], vehicle_data['is_refrigerated'])
+                elif vehicle_data['type'] == 'Ship':
+                    vehicle = Ship(vehicle_data['capacity'], vehicle_data['name'])
+                self.company.add_vehicle(vehicle)
+
     #сохранение данных в файлы
     def save_data(self):
         clients_data = [{'name': client.name, 'cargo_weight': client.cargo_weight, 'is_vip': client.is_vip} for client in self.company.clients]
