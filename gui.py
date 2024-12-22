@@ -186,20 +186,38 @@ class TransportApp:
     def show_about(self):
         messagebox.showinfo("О программе", "ЛР 11\nВариант: 123\nФИО разработчика: Иванов И.И.")
     #удаление
-    def delete_object(self):
-        selected_client_index = self.client_listbox.curselection()
-        selected_vehicle_index = self.vehicle_listbox.curselection()
-        if selected_client_index:
-            client = self.company.clients[selected_client_index[0]]
+# Удаление клиента или транспортного средства
+def delete_object(self):
+    selected_client_index = self.client_listbox.curselection()
+    selected_vehicle_index = self.vehicle_listbox.curselection()
+
+    # Удаление клиента
+    if selected_client_index:
+        client = self.company.clients[selected_client_index[0]]
+        if client:  # Проверка на существование клиента
             self.company.clients.remove(client)
             self.refresh_client_list()
             messagebox.showinfo("Удаление", f"Клиент {client.name} удален.")
-        if selected_vehicle_index:
-            vehicle = self.company.vehicles[selected_vehicle_index[0]]
+        else:
+            messagebox.showerror("Ошибка", "Клиент не найден.")
+    else:
+        messagebox.showerror("Ошибка", "Не выбран клиент для удаления.")
+
+    # Удаление транспортного средства
+    if selected_vehicle_index:
+        vehicle = self.company.vehicles[selected_vehicle_index[0]]
+        if vehicle:  # Проверка на существование транспортного средства
             self.company.vehicles.remove(vehicle)
             self.refresh_vehicle_list()
             messagebox.showinfo("Удаление", f"Транспортное средство {vehicle.vehicle_id} удалено.")
-        self.save_data()
+        else:
+            messagebox.showerror("Ошибка", "Транспортное средство не найдено.")
+    else:
+        messagebox.showerror("Ошибка", "Не выбрано транспортное средство для удаления.")
+
+    # Сохранение данных после удаления
+    self.save_data()
+
 #функция запуска
 def main():
     company_name = simpledialog.askstring("Компания", "Введите название компании:")
