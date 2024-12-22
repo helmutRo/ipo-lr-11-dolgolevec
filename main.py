@@ -8,10 +8,13 @@ from transport.transport_company import TransportCompany
 
 # Функция для проверки и создания файлов, если они не существуют
 def ensure_file_exists(file_path, default_data=None):
-    if not os.path.exists(file_path):
-        # Если файл не существует, создаем его с пустыми данными или дефолтными
-        with open(file_path, 'w', encoding='utf-8') as file:
+    base_path = os.path.dirname(os.path.realpath(__file__))  # Получаем путь до текущего файла
+    full_path = os.path.join(base_path, 'transport', file_path)  # Строим путь к файлу относительно текущего каталога
+    
+    if not os.path.exists(full_path):
+        with open(full_path, 'w', encoding='utf-8') as file:
             json.dump(default_data if default_data is not None else [], file, indent=4, ensure_ascii=False)
+
 
 # Функция сохранения транспорта в файл
 def save_transport_to_file(vehicles):
