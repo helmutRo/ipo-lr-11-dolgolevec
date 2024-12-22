@@ -1,3 +1,4 @@
+import os
 import json
 from transport import func 
 from transport.client import Client
@@ -5,7 +6,16 @@ from transport.van import Van
 from transport.ship import Ship
 from transport.transport_company import TransportCompany
 
+# Функция для проверки и создания файлов, если они не существуют
+def ensure_file_exists(file_path, default_data=None):
+    if not os.path.exists(file_path):
+        # Если файл не существует, создаем его с пустыми данными или дефолтными
+        with open(file_path, 'w', encoding='utf-8') as file:
+            json.dump(default_data if default_data is not None else [], file, indent=4, ensure_ascii=False)
+
+# Функция сохранения транспорта в файл
 def save_transport_to_file(vehicles):
+    ensure_file_exists('transport/transport.json')  # Убедимся, что файл существует
     transport_data = []
     for vehicle in vehicles:
         vehicle_info = {
@@ -19,12 +29,15 @@ def save_transport_to_file(vehicles):
     with open('transport/transport.json', 'w', encoding='utf-8') as file:
         json.dump(transport_data, file, indent=4, ensure_ascii=False)
 
+# Функция для отображения списка транспортных средств
 def list_vehicles():
+    ensure_file_exists('transport/transport.json')  # Убедимся, что файл существует
     with open('transport/transport.json', 'r', encoding='utf-8') as file:
         data = json.load(file)
         for vehicle in data:
             print(f"ID: {vehicle['id']}, Грузоподъемность: {vehicle['capacity']}, Загруженность: {vehicle['current_load']}")
 
+# Функция ввода клиента
 def input_client():
     name = input("Введите имя клиента: ")
     
@@ -55,6 +68,7 @@ def input_client():
     return client
 
 
+# Функция ввода транспортного средства
 def input_vehicle():
     vehicle_type = input("Введите тип транспортного средства (фургон/судно): ").strip().lower()
     
@@ -83,7 +97,9 @@ def input_vehicle():
         return None
 
 
+# Функция проверки уникальности ID транспортного средства
 def is_vehicle_id_unique(vehicle_id):
+    ensure_file_exists('transport/transport.json')  # Убедимся, что файл существует
     with open('transport/transport.json', 'r', encoding='utf-8') as file:
         data = json.load(file)
         for vehicle in data:
@@ -91,7 +107,9 @@ def is_vehicle_id_unique(vehicle_id):
                 return False
     return True
 
+# Функция добавления транспортного средства в список
 def add_vehicle_to_list(vehicle):
+    ensure_file_exists('transport/transport.json')  # Убедимся, что файл существует
     with open('transport/transport.json', 'r', encoding='utf-8') as file:
         data = json.load(file)
     if is_vehicle_id_unique(vehicle.vehicle_id):
@@ -108,6 +126,7 @@ def add_vehicle_to_list(vehicle):
     else:
         print("Ошибка: транспортное средство с таким ID уже существует.")
 
+# Главное меню программы
 def menu(company):
     while True:
         action = input("1 - Добавить клиента \n2 - Добавить транспорт\n3 - Распределить грузы \n4 - Вывести список транспорта \n5 - Выход\n")
@@ -132,7 +151,10 @@ def menu(company):
         else:
             print("Неверная команда, попробуйте снова.")
 
+# Основная функция
 def main():
+    ensure_file_exists('transport/transport.json')  # Убедимся, что файл существует
+    ensure_file_exists('transport/clients.json')    # Убедимся, что файл клиентов существует
     company_name = input("Введите название компании: ")
     company = TransportCompany(company_name)
     menu(company)
